@@ -1,4 +1,4 @@
-# audio-processor
+# Audio Memos
 A command-line application that allows users to record and upload audio files.
 
 # Features
