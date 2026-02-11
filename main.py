@@ -1,12 +1,12 @@
+import utils.file_manager as utils
+
 def main():
     print("Welcome to Audio Memos. Here you can create and manage your audio notes.")
-    if len(memo_list) == 0:
-        print("You have no audio memos.")
+    if utils.has_files():
+        print("Here are your saved memos:")
+        utils.get_files()
     else:
-        for memo in memo_list:
-            print(memo['title'])
-
-memo_list = [{'title': 'Note1', 'location': 'path/to/note1'}, {'title': 'Note2', 'location': 'path/to/note2'}]
+        print("You don't have any memos saved! Record or upload one to get started.")
 
 if __name__ == "__main__":
     main()
