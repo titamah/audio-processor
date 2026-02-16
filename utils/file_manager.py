@@ -16,22 +16,30 @@ def print_library():
 
 def change_level(d):
     global library, curr_dir 
-    curr_dir = d
-    library = {
-    (f.name + "/" if f.is_dir() else f.name): f 
-    for f in d.glob('*') 
-    if f.name != ".gitignore"
+    if not d.is_relative_to(root):
+        print("You are already at the root.")
+    else:
+        curr_dir = d
+        library = {
+        (f.name + "/" if f.is_dir() else f.name): f 
+        for f in d.glob('*') 
+        if f.name != ".gitignore"
 }
 
 def is_empty():
     return not bool(library)
 
-        
 
 def get_selection():
     while True:
         print_library()
-        i =  input("Enter the name of the item to select: ")
+        i =  input("Enter [B]ack, [E]xit, or the name of the item: ")
+        if i.capitalize() == "E":
+            i = input(f"Are you sure you want to exit the file explorer? Enter Y for yes or N for no: ")
+            if i.capitalize() == "Y":
+                return False
+            if i.capitalize() == "N":
+                select_item()
         if i.capitalize() == "B":
             change_level(curr_dir.parent)
             return curr_dir
@@ -41,11 +49,14 @@ def get_selection():
 
 def select_item():
     item = get_selection()
-    if item.is_dir():
+    if item is False:
+        return False
+    elif item.is_dir():
         change_level(item)
         return select_item()
     elif item.is_file():
-        return(item)
+        print("selected: " + item.name)
+        handle_selection(item)
     
 def edit_file(file):
     print("Pretend you're editing this file!")
@@ -84,4 +95,5 @@ def handle_selection(file):
                 play_file(file)
             elif i.capitalize() == "B":
                 select_item()
-            print("Hm, I didn't catch that. Try again.")
+            else:
+                print("Hm, I didn't catch that. Try again.")

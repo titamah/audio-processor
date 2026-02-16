@@ -9,7 +9,7 @@ A command-line application that allows users to record and upload audio files.
 
 # Requirements
 - PyDub for audio manipulation
-- FFmpeg for AudioFile coding anf decoding
+- FFmpeg for AudioFile coding and decoding
 - sounddevice for recording and playback
 
 # Implementation
