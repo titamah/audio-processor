@@ -39,10 +39,10 @@ def get_selection():
             if i.capitalize() == "Y":
                 return False
             if i.capitalize() == "N":
-                select_item()
+                continue
         if i.capitalize() == "B":
             change_level(curr_dir.parent)
-            return curr_dir
+            continue
         if i in library:
             return library[i]
         print("This item doesn't exist! Try again.")
@@ -55,17 +55,16 @@ def select_item():
         change_level(item)
         return select_item()
     elif item.is_file():
-        print("selected: " + item.name)
-        handle_selection(item)
+        print("Selected: " + item.name)
+        if handle_selection(item) is False:
+            return select_item()
     
 def edit_file(file):
     print("Pretend you're editing this file!")
-    handle_selection(file)
 
     
 def play_file(file):
     print("Pretend you're listening to this file.")
-    handle_selection(file)
 
 def delete_file(file):
     while True:
@@ -76,7 +75,7 @@ def delete_file(file):
             return True
         if i.capitalize() == "N":
             print("Canceled. Returning to menu.")
-            handle_selection(file)
+            return False
         print("Hm, I didn't catch that. Try again.")
 
 def handle_selection(file):
@@ -90,10 +89,10 @@ def handle_selection(file):
                 edit_file(file)
             elif i.capitalize() == "D":
                 if delete_file(file):
-                    select_item()
+                    return False
             elif i.capitalize() == "L":
                 play_file(file)
             elif i.capitalize() == "B":
-                select_item()
+                    continue
             else:
                 print("Hm, I didn't catch that. Try again.")
