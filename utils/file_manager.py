@@ -1,19 +1,22 @@
 from pathlib import Path
 
-p = Path('./library')
+root = Path('./library')
+curr_dir = root
 
 library = {
     (f.name + "/" if f.is_dir() else f.name): f 
-    for f in p.glob('*') 
+    for f in root.glob('*') 
     if f.name != ".gitignore"
 }
 
 def print_library():
+    print(curr_dir.relative_to(root))
     for item in library.keys():
-        print(item)
+        print("- " + item)
 
 def change_level(d):
-    global library 
+    global library, curr_dir 
+    curr_dir = d
     library = {
     (f.name + "/" if f.is_dir() else f.name): f 
     for f in d.glob('*') 
@@ -23,10 +26,15 @@ def change_level(d):
 def is_empty():
     return not bool(library)
 
+        
+
 def get_selection():
     while True:
         print_library()
         i =  input("Enter the name of the item to select: ")
+        if i.capitalize() == "B":
+            change_level(curr_dir.parent)
+            return curr_dir
         if i in library:
             return library[i]
         print("This item doesn't exist! Try again.")
@@ -66,7 +74,7 @@ def handle_selection(file):
     else:
         while True:
             print(f"--- Currect selection: : {file.name} ---")
-            i = input("[E]dit, [D]elete, or [L]isten: ")
+            i = input("[E]dit, [D]elete, [L]isten, or [B]ack: ")
             if i.capitalize() == "E":
                 edit_file(file)
             elif i.capitalize() == "D":
@@ -74,5 +82,6 @@ def handle_selection(file):
                     select_item()
             elif i.capitalize() == "L":
                 play_file(file)
+            elif i.capitalize() == "B":
+                select_item()
             print("Hm, I didn't catch that. Try again.")
-
