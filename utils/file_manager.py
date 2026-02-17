@@ -1,25 +1,25 @@
 from pathlib import Path
 
-root = Path('./library')
-curr_dir = root
+ROOT = Path('./library')
+current_dir = ROOT
 
 library = {
     (f.name + "/" if f.is_dir() else f.name): f 
-    for f in root.glob('*') 
+    for f in ROOT.glob('*') 
     if f.name != ".gitignore"
 }
 
 def print_library():
-    print(curr_dir.relative_to(root))
+    print(current_dir.relative_to(ROOT))
     for item in library.keys():
         print("- " + item)
 
-def change_level(d):
-    global library, curr_dir 
-    if not d.is_relative_to(root):
+def change_dir(d):
+    global library, current_dir 
+    if not d.is_relative_to(ROOT):
         print("You are already at the root.")
     else:
-        curr_dir = d
+        current_dir = d
         library = {
         (f.name + "/" if f.is_dir() else f.name): f 
         for f in d.glob('*') 
@@ -28,7 +28,6 @@ def change_level(d):
 
 def is_empty():
     return not bool(library)
-
 
 def get_selection():
     while True:
@@ -41,7 +40,7 @@ def get_selection():
             if i.capitalize() == "N":
                 continue
         if i.capitalize() == "B":
-            change_level(curr_dir.parent)
+            change_dir(current_dir.parent)
             continue
         if i in library:
             return library[i]
@@ -52,7 +51,7 @@ def select_item():
     if item is False:
         return False
     elif item.is_dir():
-        change_level(item)
+        change_dir(item)
         return select_item()
     elif item.is_file():
         print("Selected: " + item.name)
@@ -61,7 +60,6 @@ def select_item():
     
 def edit_file(file):
     print("Pretend you're editing this file!")
-
     
 def play_file(file):
     print("Pretend you're listening to this file.")
