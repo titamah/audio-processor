@@ -17,6 +17,46 @@ A command-line application that allows users to record and upload audio files.
 - Users can upload or record files directly into this directory
 - ./utlis/file_manager.py provides functions for getting, viewing, and listing out files stored in Memo
 
+## Utils
+
+### File Manager
+Provides functionality for exploring library directory and selecting files. This has global root and curr_dir PathObjects pointing at the directory that stores all audio memos and the user's current location to support nested folders. The functions specified are:
+
+- **print_library():** Prints the current directory and all its content
+
+- **change_level(directory):** Moves the user from the current directory to the given PathObject
+
+- **is_empty():** Returns a Bool if the library is empty or not
+
+- **get_selection():** Prompts a user to navigate to the parent directory, exit the file manager, or input their selection from the library. 
+
+- **select_item():** Prompts a user to make a selection. If the selection is a File, it will pass it to handler. If the selection is a Directory, it will recur. 
+    
+- **edit_file(file):** 
+    
+- **play_file(file):** 
+
+- **delete_file(file):** Removes given file from Library and deletes file
+
+- **rename_file(file, name):**
+
+- **handle_selection(file):** Gets a selection and allows a prompts a user to edit, delete, listen, or deselect this file.
+
+### Audio Tools
+- **record():**
+- **upload():**
+- **play():**
+- **save_as(Name):**
+
+- **reverse(file)**
+- **trim(file)**
+- **change_volume(file, value)**
+- **filter(file, filter, intensity?)**
+
+
+
+
+
 Next Steps:
 In Main: Allow user to go in and out of Read/Update/Delete mode to Create Mode
 Create Mode:
@@ -36,8 +76,3 @@ In Edit mode:
 - Save a copy or overwrite?
 - save a copy > input name
 - add to library
-
-Add all functions so far to README
-- name
-- input, output
-- description
