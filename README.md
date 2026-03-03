@@ -20,7 +20,7 @@ A command-line application that allows users to record and upload audio files.
 ## Utils
 
 ### File Manager
-Provides functionality for exploring library directory and selecting files. The global variables specified are:
+Provides functionality for exploring library directory and selecting files. The functions prompting user responses verify that each input is correct via raising and handling exceptons and errors. The global variables specified are:
 
 - **ROOT:** A constant variable for PathObject that is pointing to the ./library directory which stores all the audio files for the application
 - **current_dir**: A PathObject for the current director a user is in
