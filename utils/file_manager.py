@@ -34,17 +34,19 @@ def get_selection():
         print_library()
         i =  input("Enter [B]ack, [E]xit, or the name of the item: ")
         if i.capitalize() == "E":
-            i = input(f"Are you sure you want to exit the file explorer? Enter Y for yes or N for no: ")
-            if i.capitalize() == "Y":
+            confirm = input(f"Are you sure you want to exit the file explorer? Enter Y for yes or N for no: ")
+            if confirm.capitalize() == "Y":
                 return False
             if i.capitalize() == "N":
                 continue
-        if i.capitalize() == "B":
+        elif i.capitalize() == "B":
             change_dir(current_dir.parent)
             continue
-        if i in library:
-            return library[i]
-        print("This item doesn't exist! Try again.")
+        else:
+            try:
+                return library[i]
+            except KeyError:
+                print(f"Error: '{i}' doesn't exist.")
 
 def select_item():
     item = get_selection()
@@ -68,29 +70,44 @@ def delete_file(file):
     while True:
         i = input(f"Are you sure you want to delete {file.name}? Enter Y for yes or N for no: ")
         if i.capitalize() == "Y":
-            library.pop(file.name).unlink()
-            print("File deleted.")
-            return True
+            try:
+                library.pop(file.name).unlink()
+                print("File deleted.")
+                return True
+            except KeyError:
+                print(f"Error: '{i}' file not found.")
+                return False
+            except OSError as error:
+                print(f"Error: {error.strerror}")
+                return False
         if i.capitalize() == "N":
             print("Canceled. Returning to menu.")
             return False
         print("Hm, I didn't catch that. Try again.")
 
 def handle_selection(file):
-    if not file.is_file():
-        print("Hmm, this isn't file!")
-    else:
-        while True:
-            print(f"--- Currect selection: : {file.name} ---")
-            i = input("[E]dit, [D]elete, [L]isten, or [B]ack: ")
-            if i.capitalize() == "E":
-                edit_file(file)
-            elif i.capitalize() == "D":
-                if delete_file(file):
-                    return False
-            elif i.capitalize() == "L":
-                play_file(file)
-            elif i.capitalize() == "B":
-                    continue
-            else:
-                print("Hm, I didn't catch that. Try again.")
+    try:
+        if not file.is_file():
+            raise ValueError("Selection is not a file.")
+        else:
+            while True:
+                print(f"--- Currect selection: : {file.name} ---")
+                i = input("[E]dit, [D]elete, [L]isten, or [B]ack: ")
+                try:
+                    if i.capitalize() == "E":
+                        edit_file(file)
+                    elif i.capitalize() == "D":
+                        if delete_file(file):
+                            return False
+                    elif i.capitalize() == "L":
+                        play_file(file)
+                    elif i.capitalize() == "B":
+                            return False
+                    else:
+                        print("Hm, I didn't catch that. Try again.")
+                except Exception as e:
+                    print(f"Error: {e}")
+    except ValueError as error:
+        print(f"Error: {error}")
+    except FileNotFoundError:
+        print("Error: File not found.")
