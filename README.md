@@ -1,70 +1,86 @@
-# Audio Memos
-A command-line application that allows users to record and upload audio files.
+# Audio Notes
+A command-line application to record, upload, and manage audio notes.
 
 # Features
-- record new audio files and save them
-- upload audio files to the application
-- view saved audio files and play them back
-- manipulate / edit an audio file (ex: increase or decrease volume, reverse, trim)
+- Record new audio notes directly from the microphone
+- Upload existing audio files into your library
+- Browse and search your library
+- Play back any saved note
+- Rename or delete notes
+- Edit notes: reverse, adjust volume, change playback speed
+- Save edits as a new note or overwrite the original
+
+# Tech Stack
+- **PyDub** — audio manipulation (reverse, volume, speed, export)
+- **FFmpeg** — audio encoding/decoding (required by PyDub)
+- **sounddevice** — microphone recording
+- **soundfile** — writing recorded audio to disk
+- **SQLite** — local database for storing note metadata
+- **InquirerPy** — interactive CLI prompts and styling
+
+# Project Structure
+```
+.
+├── main.py                  # App entry point and all UI logic
+├── audio_notes.db           # SQLite database (auto-created on first run)
+├── library/                 # Stored audio files (.wav)
+├── db/
+│   ├── database.py          # Connection and DB initialization
+│   ├── queries.py           # All SQL queries (insert, get, update, delete)
+│   └── schema.sql           # Table definitions
+├── models/
+│   └── audio_note.py        # AudioNote class
+└── services/
+    └── audio_tools.py       # Audio manipulation functions
+```
+
+# Database
+SQLite via the built-in `sqlite3` module. The database is initialized on startup via `init_db()`, which runs `schema.sql` if the table doesn't exist yet.
+
+### Schema
+```sql
+CREATE TABLE IF NOT EXISTS audio_notes (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    file_path TEXT,
+    created_at TEXT NOT NULL,
+    folder TEXT DEFAULT 'root',
+    duration REAL
+);
+```
+
+### Queries (`db/queries.py`)
+- **insert_note(note)** — saves a new AudioNote to the DB
+- **get_library()** — returns all notes as AudioNote objects
+- **get_note(note_id)** — returns a single note by ID
+- **delete_note(note_id)** — removes note from DB and deletes its file from disk
+- **update_name(note_id, new_name)** — renames a note
+- **update_duration(note_id, new_duration)** — updates duration after edits that change length (e.g. speed change)
+
+# AudioNote Model (`models/audio_note.py`)
+Represents a single audio note.
+
+### Fields
+- `id` — unique hex ID (uuid4)
+- `name` — user-given name
+- `file_path` — path to the `.wav` file in `./library/`
+- `created_at` — ISO timestamp
+- `folder` — reserved for future folder organization (default `'root'`)
+- `duration` — length in seconds (float)
+
+### Class Methods
+- **create_new(name, og_path)** — loads audio from a source path (upload or temp recording), exports it to `./library/`, computes duration, returns a new AudioNote instance
+- **create_new_audio(name, audio)** — same but takes a PyDub AudioSegment directly (used when saving edited audio)
+
+# Audio Tools (`services/audio_tools.py`)
+- **load_audio(file_path)** — loads a file as a PyDub AudioSegment
+- **play_audio(file_path)** — loads and plays a file
+- **reverse_audio(file_path)** — returns reversed AudioSegment
+- **change_volume(file_path, db_change)** — returns AudioSegment with adjusted volume (±dB)
+- **change_speed(file_path, speed)** — returns AudioSegment at new speed (0.5x–2x) using frame rate manipulation
+- **get_duration(file_path)** — returns duration in seconds
 
 # Requirements
-- PyDub for audio manipulation
-- FFmpeg for AudioFile coding and decoding
-- sounddevice for recording and playback
-
-# Implementation
-- Files will be stored in ./library/ directory
-- Users can upload or record files directly into this directory
-- ./utlis/file_manager.py provides functions for getting, viewing, and listing out files stored in Memo
-
-## Utils
-
-### File Manager
-Provides functionality for exploring library directory and selecting files. The functions prompting user responses verify that each input is correct via raising and handling exceptons and errors. The global variables specified are:
-
-- **ROOT:** A constant variable for PathObject that is pointing to the ./library directory which stores all the audio files for the application
-- **current_dir**: A PathObject for the current director a user is in
-- **library**: A dict that stores PathObjects for each file and directory in the .library with its name as the key
-
-The functions specified are:
-
-- **print_library():** Prints the current directory and all its content
-- **change_level(directory):** Moves the user from the current directory to the given PathObject
-- **is_empty():** Returns a Bool if the library is empty or not
-- **get_selection():** Prompts a user to navigate to the parent directory, exit the file manager, or input their selection from the library. 
-- **select_item():** Prompts a user to make a selection. If the selection is a File, it will pass it to handler. If the selection is a Directory, it will recur. 
-- **edit_file(file):** 
-- **play_file(file):** 
-- **delete_file(file):** Removes given file from Library and deletes file
-- **rename_file(file, name):**
-- **handle_selection(file):** Gets a selection and allows a prompts a user to edit, delete, listen, or deselect this file.
-
-### Audio Tools
-- **record():**
-- **upload():**
-- **play():**
-- **save_as(Name):**
-- **reverse(file)**
-- **trim(file)**
-- **change_volume(file, value)**
-- **filter(file, filter, intensity?)**
-
-Next Steps:
-In Main: Allow user to go in and out of Read/Update/Delete mode to Create Mode
-Create Mode:
-Create a Utils/audio_manipulation or something
-- record, upload from a computer
-- select file > add to library
-- Do you want to listen?
-- save as > do you want to overwrite?
-
-In Edit mode:
-- play, delete, edit
-- edit > rename, reverse, trim, change volume, filter
-- change volume > + X or - X
-- filer > list out filter options
-- Do you want to listen?
-- Do you want to edit or you're done?
-- Save a copy or overwrite?
-- save a copy > input name
-- add to library
+- Python 3.7+
+- FFmpeg installed on your system
+- See `requirements.txt` for Python packages

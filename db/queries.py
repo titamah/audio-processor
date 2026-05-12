@@ -51,7 +51,6 @@ def delete_note(note_id):
     if note:
         import os
         if os.path.exists(note.file_path):
-            print(note.file_path)
             os.remove(note.file_path)
 
         cur.execute(
@@ -75,5 +74,19 @@ def update_name(note_id, new_name):
         WHERE id = ?
     """, (new_name, note_id))
     
+    conn.commit()
+    conn.close()
+
+
+def update_duration(note_id, new_duration):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        UPDATE audio_notes
+        SET duration = ?
+        WHERE id = ?
+    """, (new_duration, note_id))
+
     conn.commit()
     conn.close()

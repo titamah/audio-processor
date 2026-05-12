@@ -21,9 +21,12 @@ def change_volume(file_path, db_change):
     return audio + db_change
 
 
-def trim_audio(file_path, start_ms, end_ms):
+def change_speed(file_path, speed):
     audio = load_audio(file_path)
-    return audio[start_ms:end_ms]
+    altered = audio._spawn(audio.raw_data, overrides={
+        "frame_rate": int(audio.frame_rate * speed)
+    }).set_frame_rate(audio.frame_rate)
+    return altered
 
 
 def get_duration(file_path):
