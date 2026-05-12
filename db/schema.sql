@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS audio_notes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
-    file_path TEXT NOT NULL,
+    file_path TEXT,
     created_at TEXT NOT NULL,
     folder TEXT DEFAULT 'root',
     duration REAL
